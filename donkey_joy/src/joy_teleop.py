@@ -320,7 +320,7 @@ class JoyTeleop:
                 self.service_types[service_name] = rosservice.get_service_class_by_name(
                     service_name
                 )
-            except ROSServiceException, e:
+            except ROSServiceException as e:
                 raise JoyTeleopException(
                     "service {} could not be loaded: {}".format(service_name, str(e))
                 )

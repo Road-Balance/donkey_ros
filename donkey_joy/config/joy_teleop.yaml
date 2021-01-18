@@ -9,7 +9,7 @@ teleop:
     type: topic
     is_default: true
     message_type: ackermann_msgs/AckermannDriveStamped
-    topic_name: low_level/ackermann_cmd_mux/input/teleop
+    topic_name: donkey_teleop
     message_value:
       -
         target: drive.speed
@@ -22,7 +22,7 @@ teleop:
   human_control:
     type: topic
     message_type: ackermann_msgs/AckermannDriveStamped
-    topic_name: low_level/ackermann_cmd_mux/input/teleop
+    topic_name: donkey_teleop
     deadman_buttons: [4]
     axis_mappings:
       -

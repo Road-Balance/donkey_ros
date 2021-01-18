@@ -51,3 +51,5 @@ qtcreator-*
 CATKIN_IGNORE
 .vscode/c_cpp_properties.json
 .vscode/settings.json
+donkey_joy/.vscode/c_cpp_properties.json
+donkey_joy/.vscode/settings.json
