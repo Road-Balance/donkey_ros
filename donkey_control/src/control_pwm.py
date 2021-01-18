@@ -35,20 +35,24 @@ class PCA9685:
         self.channel = channel
         time.sleep(init_delay)  # "Tamiya TBLE-02" makes a little leap otherwise
 
-        self.pulse = 370
+        self.pulse = 340
+        self.running = True
 
     def set_pulse(self, pulse):
         self.pulse = pulse
 
-    def set_pwm(self):
+    def set_pwm(self, pulse):
         try:
-            self.pwm.set_pwm(self.channel, 0, int(self.pulse * self.pwm_scale))
+            self.pwm.set_pwm(self.channel, 0, int(pulse * self.pwm_scale))
         except:
-            self.pwm.set_pwm(self.channel, 0, int(self.pulse * self.pwm_scale))
+            self.pwm.set_pwm(self.channel, 0, int(pulse * self.pwm_scale))
 
-    def run(self):
-        print(self.pulse)
-        self.set_pwm()
+    def run(self, pulse):
+        self.set_pwm(pulse)
+
+    def update(self):
+        while self.running:
+            self.set_pulse(self.pulse)
 
 
 class Vehicle(object):
@@ -60,17 +64,17 @@ class Vehicle(object):
         self._steering_servo = PCA9685(channel=1, busnum=1)
         rospy.loginfo("Steering Controler Awaked!!")
 
-        self._throttle_t = Thread(target=self._throttle.run, args=())
+        self._throttle_t = Thread(target=self._throttle.update, args=())
         self._throttle_t.daemon = True
         self._throttle_t.start()
 
-        self._steering_t = Thread(target=self._throttle.run, args=())
+        self._steering_t = Thread(target=self._throttle.update, args=())
         self._steering_t.daemon = True
         self._steering_t.start()
 
         self._name = name
         self._teleop_sub = rospy.Subscriber(
-            "/donkey_teleop", AckermannDriveStamped, self.joy_callback
+            "/donkey_teleop", AckermannDriveStamped, self.joy_callback, queue_size=1, buff_size=2**24
         )
         rospy.loginfo("Teleop Subscriber Awaked!! Waiting for joystick...")
 
@@ -78,12 +82,17 @@ class Vehicle(object):
         speed_pulse = msg.drive.speed
         steering_pulse = msg.drive.steering_angle
 
-        self._throttle.set_pulse(speed_pulse)
-        self._steering_servo.set_pulse(steering_pulse)
+        print(speed_pulse, steering_pulse)
+
+        self._throttle.run(speed_pulse)
+        self._steering_servo.run(steering_pulse)
 
 
 if __name__ == "__main__":
 
     rospy.init_node("donkey_control")
     myCar = Vehicle("donkey_ros")
-    rospy.spin()
+
+    rate = rospy.Rate(10)
+    while not rospy.is_shutdown():
+        rate.sleep()
