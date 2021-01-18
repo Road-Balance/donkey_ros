@@ -35,7 +35,7 @@ class PCA9685:
         self.channel = channel
         time.sleep(init_delay)  # "Tamiya TBLE-02" makes a little leap otherwise
 
-        self.pulse = 340
+        self.pulse = 370
 
     def set_pulse(self, pulse):
         self.pulse = pulse
@@ -47,6 +47,7 @@ class PCA9685:
             self.pwm.set_pwm(self.channel, 0, int(self.pulse * self.pwm_scale))
 
     def run(self):
+        print(self.pulse)
         self.set_pwm()
 
 
@@ -61,10 +62,11 @@ class Vehicle(object):
 
         self._throttle_t = Thread(target=self._throttle.run, args=())
         self._throttle_t.daemon = True
+        self._throttle_t.start()
 
         self._steering_t = Thread(target=self._throttle.run, args=())
         self._steering_t.daemon = True
-
+        self._steering_t.start()
 
         self._name = name
         self._teleop_sub = rospy.Subscriber(
