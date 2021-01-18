@@ -2,6 +2,7 @@
 
 import time
 import rospy
+from threading import Thread
 from ackermann_msgs.msg import AckermannDriveStamped
 
 
@@ -34,25 +35,39 @@ class PCA9685:
         self.channel = channel
         time.sleep(init_delay)  # "Tamiya TBLE-02" makes a little leap otherwise
 
-    def set_pulse(self, pulse):
-        try:
-            self.pwm.set_pwm(self.channel, 0, int(pulse * self.pwm_scale))
-        except:
-            self.pwm.set_pwm(self.channel, 0, int(pulse * self.pwm_scale))
+        self.pulse = 340
 
-    def run(self, pulse):
-        self.set_pulse(pulse)
+    def set_pulse(self, pulse):
+        self.pulse = pulse
+
+    def set_pwm(self):
+        try:
+            self.pwm.set_pwm(self.channel, 0, int(self.pulse * self.pwm_scale))
+        except:
+            self.pwm.set_pwm(self.channel, 0, int(self.pulse * self.pwm_scale))
+
+    def run(self):
+        self.set_pwm()
 
 
 class Vehicle(object):
     def __init__(self, name="donkey_ros"):
+        
         self._throttle = PCA9685(channel=0, busnum=1)
         rospy.loginfo("Throttle Controler Awaked!!")
+
         self._steering_servo = PCA9685(channel=1, busnum=1)
         rospy.loginfo("Steering Controler Awaked!!")
 
+        self._throttle_t = Thread(target=self._throttle.run, args=())
+        self._throttle_t.daemon = True
+
+        self._steering_t = Thread(target=self._throttle.run, args=())
+        self._steering_t.daemon = True
+
+
         self._name = name
-        self._odom_sub = rospy.Subscriber(
+        self._teleop_sub = rospy.Subscriber(
             "/donkey_teleop", AckermannDriveStamped, self.joy_callback
         )
         rospy.loginfo("Teleop Subscriber Awaked!! Waiting for joystick...")
@@ -60,10 +75,9 @@ class Vehicle(object):
     def joy_callback(self, msg):
         speed_pulse = msg.drive.speed
         steering_pulse = msg.drive.steering_angle
-        print( str(steering_pulse) + " " + str(speed_pulse))
 
-        self._throttle.run(speed_pulse)
-        self._steering_servo.run(steering_pulse)
+        self._throttle.set_pulse(speed_pulse)
+        self._steering_servo.set_pulse(steering_pulse)
 
 
 if __name__ == "__main__":
