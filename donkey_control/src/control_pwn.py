@@ -46,17 +46,21 @@ class PCA9685:
 
 class Vehicle(object):
     throttle = PCA9685(channel=0, busnum=1)
+    rospy.loginfo("Throttle Controler Awaked!!")
     steering_servo = PCA9685(channel=1, busnum=1)
+    rospy.loginfo("Steering Controler Awaked!!")
 
     def __init__(self, name="donkey_ros"):
         self._name = name
         self._odom_sub = rospy.Subscriber(
             "/donkey_teleop", AckermannDriveStamped, self.joy_callback
         )
+        rospy.loginfo("Teleop Subscriber Awaked!! Waiting for joystick...")
 
     def joy_callback(self, msg):
         steering_pulse = msg.drive.steering_angle
         speed_pulse = msg.drive.speed
+        print( str(steering_pulse) + " " + str(speed_pulse))
 
         steering_servo.run(steering_pulse)
         throttle.run(speed_pulse)
