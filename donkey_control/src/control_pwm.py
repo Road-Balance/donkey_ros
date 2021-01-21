@@ -39,9 +39,6 @@ class PCA9685:
         self.prev_pulse = 340
         self.running = True
 
-    def set_pulse(self, pulse):
-        self.pulse = pulse
-
     def set_pwm(self, pulse):
         try:
             self.pwm.set_pwm(self.channel, 0, int(pulse * self.pwm_scale))
@@ -60,6 +57,9 @@ class PCA9685:
         self.set_pwm(pulse)
         self.prev_pulse = pulse
 
+    def set_pulse(self, pulse):
+        self.pulse = pulse
+
     def update(self):
         while self.running:
             self.set_pulse(self.pulse)
@@ -74,14 +74,6 @@ class Vehicle(object):
         self._steering_servo = PCA9685(channel=1, busnum=1)
         rospy.loginfo("Steering Controler Awaked!!")
 
-        self._throttle_t = Thread(target=self._throttle.update, args=())
-        self._throttle_t.daemon = True
-        self._throttle_t.start()
-
-        self._steering_t = Thread(target=self._throttle.update, args=())
-        self._steering_t.daemon = True
-        self._steering_t.start()
-
         self._name = name
         self._teleop_sub = rospy.Subscriber(
             "/donkey_teleop", AckermannDriveStamped, self.joy_callback, queue_size=1, buff_size=2**24
@@ -92,7 +84,7 @@ class Vehicle(object):
         speed_pulse = msg.drive.speed
         steering_pulse = msg.drive.steering_angle
 
-        print(speed_pulse, steering_pulse)
+        print('speed_pulse : ' + str(speed_pulse) + " / " + 'steering_pulse : ' + str(steering_pulse))
 
         self._throttle.run(speed_pulse)
         self._steering_servo.run(steering_pulse)
