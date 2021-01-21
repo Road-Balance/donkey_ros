@@ -57,7 +57,7 @@ class PCA9685:
 
 class Vehicle(object):
     def __init__(self, name="donkey_ros"):
-        
+
         self._throttle = PCA9685(channel=0, busnum=1)
         rospy.loginfo("Throttle Controler Awaked!!")
 
@@ -69,7 +69,6 @@ class Vehicle(object):
 
         self._steering_t = Thread(target=self._throttle.update, args=())
         self._steering_t.daemon = True
-
 
         self._name = name
         self._teleop_sub = rospy.Subscriber(

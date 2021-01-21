@@ -7,6 +7,6 @@
 
   <node pkg="joy" type="joy_node" name="joy_node" />
 
-  <node pkg="donkey_joy" type="joy_teleop.py" name="joy_teleop" />
+  <node pkg="donkey_joy" type="joy_teleop_axes.py" name="joy_teleop_axes" />
 
 </launch>

@@ -336,7 +336,7 @@ class JoyTeleop:
 
 if __name__ == "__main__":
     try:
-        rospy.init_node("joy_teleop")
+        rospy.init_node("joy_teleop_axes")
         jt = JoyTeleop()
         rospy.spin()
     except JoyTeleopException:

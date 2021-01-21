@@ -28,12 +28,12 @@ teleop:
       -
         axis: 1
         target: drive.speed
-        scale: 130.0                   # joystick will command plus or minus 2 meters / second
+        scale: 30.0                   # joystick will command plus or minus 2 meters / second
         offset: 370.0
       -
         axis: 2
         target: drive.steering_angle
-        scale: 85.0                  # joystick will command plus or minus ~20 degrees steering angle
+        scale: 78.0                  # joystick will command plus or minus ~20 degrees steering angle
         offset: 375.0
 
   # Enable autonomous control by pressing right bumper
