@@ -25,21 +25,28 @@ drive:
 
 class JoyTeleopBtn(object):
 
-    default_pmw_speed = 370.0
+    default_pmw_speed = 390.0
     default_pmw_steering = 375.0
-    btn_scale = 10.0
+    throttle_scale = 1.0
+    steer_scale = 6.0
 
     msg = AckermannDriveStamped()
+
+    first_forward = True
 
     def __init__(self):
         self.reset_control()
         self.sub = rospy.Subscriber("joy", Joy, self.joy_callback)
-        self.pub = rospy.Publisher("donkey_teleop", AckermannDriveStamped, queue_size=1)
+        self.pub = rospy.Publisher("/donkey_teleop", AckermannDriveStamped, queue_size=1)
         rospy.loginfo("JoyTeleopBtn Constructed")
 
     def reset_control(self):
         self.msg.drive.steering_angle = self.default_pmw_steering
         self.msg.drive.speed = self.default_pmw_speed
+        self.first_forward = True
+
+    def reset_steer(self):
+        self.msg.drive.steering_angle = self.default_pmw_steering
 
     def joy_callback(self, data):
         try:
@@ -52,15 +59,25 @@ class JoyTeleopBtn(object):
             self.set_msg(steering_btn_val, throttle_btn_val, XABY_btn_val)
             self.pub_msg()
 
-    def set_msg(self, steer, throttle, XABY):
+    def set_msg(self, steer, throttle, XABY_btn_val):
 
-        self.msg.drive.steering_angle += steer * self.btn_scale
-        self.msg.drive.speed += throttle * self.btn_scale
+        self.msg.drive.steering_angle += steer * self.steer_scale
+        self.msg.drive.speed += throttle * self.throttle_scale
 
+        if throttle == 1 and self.first_forward == True:
+            self.first_forward = False
+            self.msg.drive.speed = 405
+
+        # debugging
         # print(steer,throttle)
         # print(self.msg)
 
-        if XABY[0] == 1:
+        X_btn = XABY_btn_val[0]
+        A_btn = XABY_btn_val[1]
+
+        if X_btn == 1:
+            self.reset_steer()
+        elif A_btn == 1:
             self.reset_control()
 
     def pub_msg(self):

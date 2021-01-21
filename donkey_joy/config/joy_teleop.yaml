@@ -28,8 +28,8 @@ teleop:
       -
         axis: 1
         target: drive.speed
-        scale: 30.0                   # joystick will command plus or minus 2 meters / second
-        offset: 370.0
+        scale: 40.0                   # joystick will command plus or minus 2 meters / second
+        offset: 380.0
       -
         axis: 2
         target: drive.steering_angle
