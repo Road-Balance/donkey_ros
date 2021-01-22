@@ -13,7 +13,7 @@ def gstreamer_pipeline(
     display_width=1280,
     display_height=720,
     framerate=60,
-    flip_method=0,
+    flip_method=2,
 ):
     return (
         "nvarguscamerasrc ! "
@@ -40,7 +40,6 @@ cap = cv2.VideoCapture(gstreamer_pipeline(flip_method=0), cv2.CAP_GSTREAMER)
 rospy.init_node("csi_pub", anonymous=True)
 image_pub = rospy.Publisher("csi_image", Image, queue_size=1)
 
-rate = rospy.Rate(5)
 bridge = CvBridge()
 
 while not rospy.is_shutdown():
@@ -50,9 +49,8 @@ while not rospy.is_shutdown():
     # Display the resulting frame
     # cv2.imshow('frame',cv_image)
     # cv2.waitKey(3)
-    image_pub.publish(bridge.cv2_to_imgmsg(cv_image))
+    image_pub.publish(bridge.cv2_to_imgmsg(cv_image, "bgr8"))
 
-    rate.sleep()
 
 # When everything done, release the capture
 cap.release()
