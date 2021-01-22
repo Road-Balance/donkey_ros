@@ -55,3 +55,5 @@ donkey_joy/.vscode/c_cpp_properties.json
 donkey_joy/.vscode/settings.json
 donkey_control/.vscode/c_cpp_properties.json
 donkey_control/.vscode/settings.json
+csi_camera/.vscode/c_cpp_properties.json
+csi_camera/.vscode/settings.json

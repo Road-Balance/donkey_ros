@@ -6,7 +6,9 @@ import time
 import numpy as np
 from threading import Thread
 
-class CSICamera(BaseCamera):
+
+
+class CSICamera(object):
     '''
     Camera for Jetson Nano IMX219 based camera
     Credit: https://github.com/feicccccccc/donkeycar/blob/dev/donkeycar/parts/camera.py
@@ -72,6 +74,17 @@ class CSICamera(BaseCamera):
         print('stoping CSICamera')  
         time.sleep(.5)
         del(self.camera)
+
+if __name__ == "__main__":
+    csi_cam = CSICamera()
+
+    t = Thread(target=csi_cam.update, args=())
+    t.daemon = True
+    t.start()
+
+    frame = csi_cam.run_threaded()
+    cv2.imshow("CSI Camera", frame)
+    
 
 
 # MIT License
