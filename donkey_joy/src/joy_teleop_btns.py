@@ -37,7 +37,9 @@ class JoyTeleopBtn(object):
     def __init__(self):
         self.reset_control()
         self.sub = rospy.Subscriber("joy", Joy, self.joy_callback)
-        self.pub = rospy.Publisher("/donkey_teleop", AckermannDriveStamped, queue_size=1)
+        self.pub = rospy.Publisher(
+            "/donkey_teleop", AckermannDriveStamped, queue_size=1
+        )
         rospy.loginfo("JoyTeleopBtn Constructed")
 
     def reset_control(self):

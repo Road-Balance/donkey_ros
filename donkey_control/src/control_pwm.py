@@ -47,13 +47,13 @@ class PCA9685:
 
     def run(self, pulse):
         pulse_diff = pulse - self.prev_pulse
-        
-        if (abs(pulse_diff) > 40):
+
+        if abs(pulse_diff) > 40:
             if pulse_diff > 0:
-                pulse += (0.7 * pulse_diff)
+                pulse += 0.7 * pulse_diff
             else:
-                pulse -= (0.7 * pulse_diff)
-        
+                pulse -= 0.7 * pulse_diff
+
         self.set_pwm(pulse)
         self.prev_pulse = pulse
 
@@ -76,7 +76,11 @@ class Vehicle(object):
 
         self._name = name
         self._teleop_sub = rospy.Subscriber(
-            "/donkey_teleop", AckermannDriveStamped, self.joy_callback, queue_size=1, buff_size=2**24
+            "/donkey_teleop",
+            AckermannDriveStamped,
+            self.joy_callback,
+            queue_size=1,
+            buff_size=2 ** 24,
         )
         rospy.loginfo("Teleop Subscriber Awaked!! Waiting for joystick...")
 
@@ -84,7 +88,13 @@ class Vehicle(object):
         speed_pulse = msg.drive.speed
         steering_pulse = msg.drive.steering_angle
 
-        print('speed_pulse : ' + str(speed_pulse) + " / " + 'steering_pulse : ' + str(steering_pulse))
+        print(
+            "speed_pulse : "
+            + str(speed_pulse)
+            + " / "
+            + "steering_pulse : "
+            + str(steering_pulse)
+        )
 
         self._throttle.run(speed_pulse)
         self._steering_servo.run(steering_pulse)
