@@ -95,6 +95,10 @@ if __name__ == "__main__":
 # Drivers for the camera and OpenCV are included in the base image
 
 import cv2
+import rospy
+from sensor_msgs.msg import Image
+from cv_bridge import CvBridge, CvBridgeError
+
 
 # gstreamer_pipeline returns a GStreamer pipeline for capturing from the CSI camera
 # Defaults to 1280x720 @ 60fps
@@ -131,6 +135,10 @@ def gstreamer_pipeline(
 
 
 def show_camera():
+    
+    image_pub = rospy.Publisher("image_topic_2", Image)
+    bridge = CvBridge()
+
     # To flip the image, modify the flip_method parameter (0 and 2 are the most common)
     print(gstreamer_pipeline(flip_method=0))
     cap = cv2.VideoCapture(gstreamer_pipeline(flip_method=0), cv2.CAP_GSTREAMER)
@@ -145,6 +153,11 @@ def show_camera():
             # Stop the program on the ESC key
             if keyCode == 27:
                 break
+
+            try:
+                image_pub.publish(bridge.cv2_to_imgmsg(img, "bgr8"))
+            except CvBridgeError as e:
+                print(e)
         cap.release()
         cv2.destroyAllWindows()
     else:
@@ -152,4 +165,7 @@ def show_camera():
 
 
 if __name__ == "__main__":
+    rospy.init_node("image_converter", anonymous=True)
+    rospy.spin()
+
     show_camera()
