@@ -155,7 +155,7 @@ def main(args):
     #--- detection window respect to camera frame in [x_min, y_min, x_max, y_max] adimensional (0 to 1)
     x_min   = 0.1
     x_max   = 0.9
-    y_min   = 0.4
+    y_min   = 0.1
     y_max   = 0.9
     
     detection_window = [x_min, y_min, x_max, y_max]
@@ -168,8 +168,8 @@ def main(args):
      
     # Filter by Area.
     params.filterByArea = True
-    params.minArea = 20
-    params.maxArea = 20000
+    params.minArea = 200
+    params.maxArea = 70000
      
     # Filter by Circularity
     params.filterByCircularity = True
