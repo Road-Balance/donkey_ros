@@ -1,0 +1,8 @@
+<launch>
+
+  <!-- hostname:8080 -->
+  <node pkg="web_video_server" type="web_video_server" name="web_video_server" />
+
+  <node pkg="csi_camera" type="csi_pub.py" name="csi_pub" />
+
+</launch>
