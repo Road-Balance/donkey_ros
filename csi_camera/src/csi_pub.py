@@ -8,12 +8,12 @@ from cv_bridge import CvBridge, CvBridgeError
 
 
 def gstreamer_pipeline(
-    capture_width=1280,
-    capture_height=720,
-    display_width=1280,
-    display_height=720,
+    capture_width=640,
+    capture_height=480,
+    display_width=640,
+    display_height=480,
     framerate=60,
-    flip_method=2,
+    flip_method=0,
 ):
     return (
         "nvarguscamerasrc ! "
@@ -35,7 +35,7 @@ def gstreamer_pipeline(
     )
 
 
-cap = cv2.VideoCapture(gstreamer_pipeline(flip_method=0), cv2.CAP_GSTREAMER)
+cap = cv2.VideoCapture(gstreamer_pipeline(flip_method=2), cv2.CAP_GSTREAMER)
 
 rospy.init_node("csi_pub", anonymous=True)
 image_pub = rospy.Publisher("csi_image", Image, queue_size=1)
