@@ -61,8 +61,12 @@ class BlobDetector:
         self.blob_pub  = rospy.Publisher("/blob/point_blob",Point,queue_size=1)
 
         self.bridge = CvBridge()
-        self.image_sub = rospy.Subscriber("/webcam_image",Image,self.callback)
-        print ("<< Subscribed to topic /webcam_image")
+        self.image_sub = rospy.Subscriber("/csi_image",Image,self.callback)
+        print ("<< Subscribed to topic /csi_image")
+
+        # TODO: switch btw webcam/csi by launch file
+        # self.image_sub = rospy.Subscriber("/webcam_image",Image,self.callback)
+        # print ("<< Subscribed to topic /webcam_image")
         
     def set_threshold(self, thr_min, thr_max):
         self._threshold = [thr_min, thr_max]
@@ -140,6 +144,9 @@ def main(args):
     
     pink_min = (135, 41, 95)
     pink_max = (255, 196, 255)
+
+    green_min = (39, 81, 71)
+    green_max = (75, 255, 255)
     
     blur     = 5
     min_size = 10
@@ -177,7 +184,7 @@ def main(args):
     params.minInertiaRatio = 0.7   
 
     rospy.init_node('blob_detector', anonymous=True)
-    ic = BlobDetector(pink_min, pink_max, blur, params, detection_window)
+    ic = BlobDetector(green_min, green_max, blur, params, detection_window)
     try:
         rospy.spin()
     except KeyboardInterrupt:
