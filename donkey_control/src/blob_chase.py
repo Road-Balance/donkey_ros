@@ -109,7 +109,7 @@ class DkLowLevelCtrl:
         self._last_time_chase_rcv = time.time()
         self.throttle_chase = message.linear.x
         self.steer_chase = message.angular.z
-        print self.throttle_chase, self.steer_chase
+        print(self.throttle_chase, self.steer_chase)
 
     def compose_command_velocity(self):
         self.throttle = saturate(self.throttle_cmd * self.throttle_chase, -1, 1)
@@ -132,7 +132,9 @@ class DkLowLevelCtrl:
         self.actuators["throttle"].get_value_out(throttle)
         self.actuators["steering"].get_value_out(steering)
         # rospy.loginfo("Got a command v = %2.1f  s = %2.1f"%(throttle, steering))
-        self.send_servo_msg()
+        # self.send_servo_msg()
+        print( "throttle value : " + str(self.actuators["throttle"].value_out))
+        print( "steering value : " + str(self.actuators["steering"].value_out))
 
     def set_actuators_idle(self):
         # -- Convert vel into servo values
