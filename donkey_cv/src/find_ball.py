@@ -164,12 +164,12 @@ def main(args):
          
     # Change thresholds
     params.minThreshold = 0;
-    params.maxThreshold = 100;
+    params.maxThreshold = 200;
      
     # Filter by Area.
     params.filterByArea = True
-    params.minArea = 200
-    params.maxArea = 70000
+    params.minArea = 2000
+    params.maxArea = 70000 # 640 * 480 = 307,200
      
     # Filter by Circularity
     params.filterByCircularity = True

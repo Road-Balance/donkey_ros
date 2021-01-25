@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 """
 Class for low level control of our car. It assumes ros-12cpwmboard has been
@@ -12,22 +12,79 @@ from i2cpwm_board.msg import Servo, ServoArray
 from geometry_msgs.msg import Twist
 import time
 
+class PCA9685:
+    """
+    PWM motor controler using PCA9685 boards.
+    This is used for most RC Cars
+    """
+
+    def __init__(
+        self, channel, address=0x40, frequency=60, busnum=None, init_delay=0.1
+    ):
+
+        self.default_freq = 60
+        self.pwm_scale = frequency / self.default_freq
+
+        import Adafruit_PCA9685
+
+        # Initialise the PCA9685 using the default address (0x40).
+        if busnum is not None:
+            from Adafruit_GPIO import I2C
+
+            # replace the get_bus function with our own
+            def get_bus():
+                return busnum
+
+            I2C.get_default_bus = get_bus
+        self.pwm = Adafruit_PCA9685.PCA9685(address=address)
+        self.pwm.set_pwm_freq(frequency)
+        self.channel = channel
+        time.sleep(init_delay)  # "Tamiya TBLE-02" makes a little leap otherwise
+
+        self.pulse = 340
+        self.prev_pulse = 340
+        self.running = True
+
+    def set_pwm(self, pulse):
+        try:
+            self.pwm.set_pwm(self.channel, 0, int(pulse * self.pwm_scale))
+        except:
+            self.pwm.set_pwm(self.channel, 0, int(pulse * self.pwm_scale))
+
+    def run(self, pulse):
+        pulse_diff = pulse - self.prev_pulse
+
+        if abs(pulse_diff) > 40:
+            if pulse_diff > 0:
+                pulse += 0.7 * pulse_diff
+            else:
+                pulse -= 0.7 * pulse_diff
+
+        self.set_pwm(pulse)
+        self.prev_pulse = pulse
+
+    def set_pulse(self, pulse):
+        self.pulse = pulse
+
+    def update(self):
+        while self.running:
+            self.set_pulse(self.pulse)
 
 class ServoConvert:
-    def __init__(self, id=1, center_value=333, range=90, direction=1):
+    def __init__(self, id=1, center_value=370, range=90, direction=1):
         self.value = 0.0
         self.value_out = center_value
         self._center = center_value
         self._range = range
-        self._half_range = 0.5 * range
-        self._dir = direction
+        self._half_range = 0.5 * range # 45
+        self._dir = direction # 1 or -1 
         self.id = id
 
         # --- Convert its range in [-1, 1]
-        self._sf = 1.0 / self._half_range
+        self._sf = 1.0 / self._half_range # 1 / 45
 
     def get_value_out(self, value_in):
-        # --- value is in [-1, 1]
+        # --- twist type value is in  [-1, 1]
         self.value = value_in
         self.value_out = int(self._dir * value_in * self._half_range + self._center)
         # print self.id, self.value_out
@@ -50,10 +107,18 @@ class DkLowLevelCtrl:
         # --- Initialize the node
         rospy.init_node("dk_llc")
 
+        self._throttle = PCA9685(channel=0, busnum=1)
+        rospy.loginfo("Throttle Controler Awaked!!")
+
+        self._steering_servo = PCA9685(channel=1, busnum=1)
+        rospy.loginfo("Steering Controler Awaked!!")
+
         self.actuators = {}
-        self.actuators["throttle"] = ServoConvert(id=1)
+        self.actuators["throttle"] = ServoConvert(
+            id=1, center_value=350, range=80
+        )
         self.actuators["steering"] = ServoConvert(
-            id=2, center_value=328, direction=1
+            id=2, center_value=375, range=80, direction=1
         )  # -- positive left
         rospy.loginfo("> Actuators corrrectly initialized")
 
@@ -109,7 +174,7 @@ class DkLowLevelCtrl:
         self._last_time_chase_rcv = time.time()
         self.throttle_chase = message.linear.x
         self.steer_chase = message.angular.z
-        print(self.throttle_chase, self.steer_chase)
+        # print(self.throttle_chase, self.steer_chase)
 
     def compose_command_velocity(self):
         self.throttle = saturate(self.throttle_cmd * self.throttle_chase, -1, 1)
@@ -133,8 +198,17 @@ class DkLowLevelCtrl:
         self.actuators["steering"].get_value_out(steering)
         # rospy.loginfo("Got a command v = %2.1f  s = %2.1f"%(throttle, steering))
         # self.send_servo_msg()
+
+        self.set_pwm_pulse(self.actuators["throttle"].value_out, self.actuators["steering"].value_out)
+
         print( "throttle value : " + str(self.actuators["throttle"].value_out))
         print( "steering value : " + str(self.actuators["steering"].value_out))
+
+
+    def set_pwm_pulse(self, speed_pulse, steering_pulse):
+        self._throttle.run(speed_pulse)
+        self._steering_servo.run(steering_pulse)
+
 
     def set_actuators_idle(self):
         # -- Convert vel into servo values
