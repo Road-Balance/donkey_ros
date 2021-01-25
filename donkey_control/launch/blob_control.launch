@@ -1,0 +1,8 @@
+<launch>
+  <node pkg="csi_camera" type="csi_pub.py" name="csi_pub" />
+  
+  <node pkg="donkey_cv" type="find_ball.py" name="blob_detector" />
+
+  <node pkg="donkey_control" type="chase_the_ball.py" name="chase_ball" />
+  
+</launch>
