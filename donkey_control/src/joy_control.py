@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 
+"""
+Node for control PCA9685 using AckermannDriveStamped msg 
+referenced from donekycar
+url : https://github.com/autorope/donkeycar/blob/dev/donkeycar/parts/actuator.py
+"""
+
 import time
 import rospy
 from threading import Thread
