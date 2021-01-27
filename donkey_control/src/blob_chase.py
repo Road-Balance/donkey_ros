@@ -1,8 +1,13 @@
 #!/usr/bin/env python
 
 """
-Class for low level control of our car. It assumes ros-12cpwmboard has been
-installed.
+referenced from those projects
+
+DkLowLevelCtrl, ServoConvert part from tizianofiorenzani/ros_tutorials
+url: https://github.com/tizianofiorenzani/ros_tutorials
+
+PCA9685 part from donkeycar
+url: https://github.com/autorope/donkeycar/blob/99c853b1737f12019ae598d3c7f00699d2166472/donkeycar/parts/actuator.py#L12
 
 Listens to /dkcar/control/cmd_vel for corrective actions to the /cmd_vel coming from keyboard or joystick
 
