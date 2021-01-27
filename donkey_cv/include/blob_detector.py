@@ -225,11 +225,11 @@ def blur_outside(image, blur=5, window_adim=[0.0, 0.0, 1.0, 1.0]):
 #---------- Obtain the camera relative frame coordinate of one single keypoint
 #-- return(x,y)
 def get_blob_relative_position(image, keyPoint):
-    rows = float(image.shape[0])
-    cols = float(image.shape[1])
+    cols = float(image.shape[0]) # 480
+    rows = float(image.shape[1]) # 640
     # print(rows, cols)
-    center_x    = 0.5*cols
-    center_y    = 0.5*rows
+    center_x    = 0.5*rows # 320
+    center_y    = 0.5*cols # 240
     # print(center_x)
     x = (keyPoint.pt[0] - center_x)/(center_x)
     y = (keyPoint.pt[1] - center_y)/(center_y)
