@@ -13,7 +13,6 @@ Listens to /dkcar/control/cmd_vel for corrective actions to the /cmd_vel coming 
 
 """
 import rospy
-# from i2cpwm_board.msg import Servo, ServoArray
 from geometry_msgs.msg import Twist
 import time
 
@@ -92,7 +91,6 @@ class ServoConvert:
         # --- twist type value is in  [-1, 1]
         self.value = value_in
         self.value_out = int(self._dir * value_in * self._half_range + self._center)
-        # print self.id, self.value_out
         return self.value_out
 
 
@@ -110,7 +108,7 @@ class DkLowLevelCtrl:
         rospy.loginfo("Setting Up the Node...")
 
         # --- Initialize the node
-        rospy.init_node("dk_llc")
+        rospy.init_node("blob_chase_node")
 
         self._throttle = PCA9685(channel=0, busnum=1)
         rospy.loginfo("Throttle Controler Awaked!!")
@@ -126,16 +124,6 @@ class DkLowLevelCtrl:
             id=2, center_value=375, range=80, direction=1
         )  # -- positive left
         rospy.loginfo("> Actuators corrrectly initialized")
-
-        # self._servo_msg = ServoArray()
-        # for i in range(2):
-        #     self._servo_msg.servos.append(Servo())
-
-        # # --- Create the servo array publisher
-        # self.ros_pub_servo_array = rospy.Publisher(
-        #     "/servos_absolute", ServoArray, queue_size=1
-        # )
-        # rospy.loginfo("> Publisher corrrectly initialized")
 
         # --- Create a debug publisher for resulting cmd_vel
         self.ros_pub_debug_command = rospy.Publisher(
@@ -223,14 +211,6 @@ class DkLowLevelCtrl:
         self.throttle_chase = 1.0
         self.steer_avoid = 0.0
 
-    # def send_servo_msg(self):
-    #     for actuator_name, servo_obj in self.actuators.iteritems():
-    #         self._servo_msg.servos[servo_obj.id - 1].servo = servo_obj.id
-    #         self._servo_msg.servos[servo_obj.id - 1].value = servo_obj.value_out
-    #         # rospy.loginfo("Sending to %s command %d"%(actuator_name, servo_obj.value_out))
-
-    #     self.ros_pub_servo_array.publish(self._servo_msg)
-
     @property
     def is_controller_connected(self):
         # print time.time() - self._last_time_cmd_rcv
@@ -248,7 +228,6 @@ class DkLowLevelCtrl:
         while not rospy.is_shutdown():
             self.compose_command_velocity()
 
-            # print self._last_time_cmd_rcv, self.is_controller_connected
             if not self.is_controller_connected:
                 self.set_actuators_idle()
 
