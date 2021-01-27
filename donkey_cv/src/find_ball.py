@@ -77,18 +77,6 @@ class BlobDetector:
     def set_blob_params(self, blob_params):
         self._blob_params = blob_params
         
-    # def get_blob_relative_position(self, cv_image, keyPoint):
-        # rows = float(cv_image.shape[0])
-        # cols = float(cv_image.shape[1])
-        # # print(rows, cols)
-        # center_x    = 0.5*cols
-        # center_y    = 0.5*rows
-        # # print(center_x)
-        # x = (keyPoint.pt[0] - center_x)/(center_x)
-        # y = (keyPoint.pt[1] - center_y)/(center_y)
-        # return(x,y)
-        
-        
     def callback(self,data):
         #--- Assuming image is 320x240
         try:
