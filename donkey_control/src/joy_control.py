@@ -75,10 +75,10 @@ class Vehicle(object):
     def __init__(self, name="donkey_ros"):
 
         self._throttle = PCA9685(channel=0, busnum=1)
-        rospy.loginfo("Throttle Controler Awaked!!")
+        rospy.loginfo("Throttle Controller Awaked!!")
 
         self._steering_servo = PCA9685(channel=1, busnum=1)
-        rospy.loginfo("Steering Controler Awaked!!")
+        rospy.loginfo("Steering Controller Awaked!!")
 
         self._name = name
         self._teleop_sub = rospy.Subscriber(
