@@ -2,6 +2,9 @@
 """
 Gets the position of the blob and it commands to steer the wheels
 
+referenced from tizianofiorenzani/ros_tutorials
+url: https://github.com/tizianofiorenzani/ros_tutorials
+
 Subscribes to 
     /blob/point_blob
     
