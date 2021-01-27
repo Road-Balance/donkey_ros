@@ -8,7 +8,7 @@ Listens to /dkcar/control/cmd_vel for corrective actions to the /cmd_vel coming 
 
 """
 import rospy
-from i2cpwm_board.msg import Servo, ServoArray
+# from i2cpwm_board.msg import Servo, ServoArray
 from geometry_msgs.msg import Twist
 import time
 
@@ -122,15 +122,15 @@ class DkLowLevelCtrl:
         )  # -- positive left
         rospy.loginfo("> Actuators corrrectly initialized")
 
-        self._servo_msg = ServoArray()
-        for i in range(2):
-            self._servo_msg.servos.append(Servo())
+        # self._servo_msg = ServoArray()
+        # for i in range(2):
+        #     self._servo_msg.servos.append(Servo())
 
-        # --- Create the servo array publisher
-        self.ros_pub_servo_array = rospy.Publisher(
-            "/servos_absolute", ServoArray, queue_size=1
-        )
-        rospy.loginfo("> Publisher corrrectly initialized")
+        # # --- Create the servo array publisher
+        # self.ros_pub_servo_array = rospy.Publisher(
+        #     "/servos_absolute", ServoArray, queue_size=1
+        # )
+        # rospy.loginfo("> Publisher corrrectly initialized")
 
         # --- Create a debug publisher for resulting cmd_vel
         self.ros_pub_debug_command = rospy.Publisher(
@@ -197,7 +197,6 @@ class DkLowLevelCtrl:
         self.actuators["throttle"].get_value_out(throttle)
         self.actuators["steering"].get_value_out(steering)
         # rospy.loginfo("Got a command v = %2.1f  s = %2.1f"%(throttle, steering))
-        # self.send_servo_msg()
 
         self.set_pwm_pulse(self.actuators["throttle"].value_out, self.actuators["steering"].value_out)
 
@@ -219,13 +218,13 @@ class DkLowLevelCtrl:
         self.throttle_chase = 1.0
         self.steer_avoid = 0.0
 
-    def send_servo_msg(self):
-        for actuator_name, servo_obj in self.actuators.iteritems():
-            self._servo_msg.servos[servo_obj.id - 1].servo = servo_obj.id
-            self._servo_msg.servos[servo_obj.id - 1].value = servo_obj.value_out
-            # rospy.loginfo("Sending to %s command %d"%(actuator_name, servo_obj.value_out))
+    # def send_servo_msg(self):
+    #     for actuator_name, servo_obj in self.actuators.iteritems():
+    #         self._servo_msg.servos[servo_obj.id - 1].servo = servo_obj.id
+    #         self._servo_msg.servos[servo_obj.id - 1].value = servo_obj.value_out
+    #         # rospy.loginfo("Sending to %s command %d"%(actuator_name, servo_obj.value_out))
 
-        self.ros_pub_servo_array.publish(self._servo_msg)
+    #     self.ros_pub_servo_array.publish(self._servo_msg)
 
     @property
     def is_controller_connected(self):
