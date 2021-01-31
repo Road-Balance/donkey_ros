@@ -1,5 +1,45 @@
-# donkey_ros
-donkey car with ROS!!
+# Donkey ROS
+
+## Donkey car with ROS!!
+
+<p align="center">
+    <img src="./Images/blob_tracking.gif" width="500" style="padding-right: 50px">
+    <img src="./Images/joy_control.gif" width="500" style="padding-left: 50px">
+</p>
+
+
+> How to make it?
+
+There's Notion Lecture Notes and Youtube video's about this project. 
+But, It's written in Korean. Anyway, Here's the link
+
+* [Notion Lecture Notes](https://www.notion.so/ROS-for-G-Camp-410d95df137d403ca176cfec4822351a)
+* Youtube Lecture Video - Coming Soon!!
+
+## Tested System information
+
+**Jetson Nano 4GB**
+
+* Ubuntu 18.04
+* ROS Melodic
+* Opencv4
+
+## Packages with Brief Explanation
+
+```
+├── csi_camera => Handling Image data For IMX219 Camera  
+├── donkey_control => Control RC Car with Adafruit PCA9685
+├── donkey_cv => Computer Vision Package with Opencv4 
+├── donkey_joy => Control RC Car with Logitech F710 Game Controller 
+│
+(...)
+├── Images
+├── LICENSE
+├── README.md
+└── STL_Files
+```
+
+### TODO - Readme on progress
 
 ```
 gst-launch-1.0 nvarguscamerasrc sensor_id=0 ! \
