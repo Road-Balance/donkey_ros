@@ -1,19 +1,25 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(csi_camera)
 
+set(OpenCV_INCLUDE_DIRS "/usr/include/opencv2;/usr/include")
+
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
+find_package( OpenCV REQUIRED )
+
 find_package(catkin REQUIRED COMPONENTS
   cv_bridge
   image_transport
   rospy
+  roscpp
   sensor_msgs
   std_msgs
 )
+
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -122,6 +128,11 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
+include_directories( 
+  ${OpenCV_INCLUDE_DIRS} 
+)
+
+
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/csi_camera.cpp
@@ -135,7 +146,8 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/csi_camera_node.cpp)
+# add_executable(webcam_pub_node src/webcam_pub.cpp)
+add_executable(class_test src/class_test.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -145,12 +157,18 @@ include_directories(
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(webcam_pub_node ${webcam_pub_node_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(class_test ${class_test_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(${PROJECT_NAME}_node
+# target_link_libraries(webcam_pub_node
 #   ${catkin_LIBRARIES}
 # )
+target_link_libraries(class_test
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBS}
+)
+
 
 #############
 ## Install ##

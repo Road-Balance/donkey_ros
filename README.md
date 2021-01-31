@@ -39,6 +39,64 @@ But, It's written in Korean. Anyway, Here's the link
 └── STL_Files
 ```
 
+## Prerequisite
+
+1. Ros Packages installation
+   
+```bash
+$ sudo apt-get install ros-melodic-cv-bridge
+$ sudo apt-get install ros-melodic-image-view
+```
+
+2. OpenCV4 installation
+
+- Can be found in JetsonHacks repo
+
+3. Clone this Repo
+
+```bash
+$ cd ~/catkin_ws/src
+$ git clone https://github.com/Road-Balance/donkey_ros.git
+
+$ cd ../
+$ catkin_make
+$ source devel/setup.bash
+```
+
+## Usage
+
+1. csi_camera package
+
+> Check Camera Connection First!!!
+
+```bash
+gst-launch-1.0 nvarguscamerasrc sensor_id=0 ! \
+   'video/x-raw(memory:NVMM),width=3280, height=2464, framerate=21/1, format=NV12' ! \
+   nvvidconv flip-method=2 ! 'video/x-raw,width=960, height=720' ! \
+   nvvidconv ! nvegltransform ! nveglglessink -e
+```
+
+* `sensor_id` : this value depends on Camera Slot in Jetson Nano.
+
+### Webcam Puslish
+
+```bash
+$ roscore
+
+$ rosrun csi_camera webcam_pub.py
+$ rosrun image_view image_view image:=/csi_image
+```
+
+### CSI Camera Publish
+
+2. donkey_control package
+
+
+3. donkey_cv package
+
+
+4. donkey_joy package
+
 ### TODO - Readme on progress
 
 ```
