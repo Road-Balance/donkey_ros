@@ -1,5 +1,6 @@
-#include "../include/WebcamClass.h"
+#include "csi_camera/VideoHandler.h"
 
+#include <stdlib.h> // for exit
 #include <ros/ros.h>
 #include <sensor_msgs/Image.h>
 #include <cv_bridge/cv_bridge.h>
@@ -9,13 +10,14 @@
 class WebcamPub {
 private:
     VideoHandler *m_vh;
-
-    cv::Mat m_image;
     ros::NodeHandle m_nh;
     ros::Publisher m_pub;
+    
+    bool m_viz;
+    cv::Mat m_image;
     sensor_msgs::ImagePtr m_msg;
 public:
-    WebcamPub(const int& device_ID_in = 0 ){
+    WebcamPub(const int& device_ID_in = 0, const bool& viz_in = 0 ): m_viz(viz_in){
         m_pub = m_nh.advertise<sensor_msgs::Image>("webcam_image", 1);
         m_vh = new VideoHandler(device_ID_in);
     }
@@ -27,10 +29,14 @@ public:
     void get_img(){
         m_vh->get_frame(m_image);
 
-        // // show live and wait for a key with timeout long enough to show images
-        // cv::imshow("Live", m_image);
-        // if (cv::waitKey(5) >= 0)
-        //     break;
+        // show live and wait for a key with timeout long enough to show images
+        if (m_viz){
+            cv::imshow("Live", m_image);
+            if (cv::waitKey(5) >= 0){
+                delete m_vh;
+                exit(1);
+            }
+        }
     }
 
     void pub_msg(){
@@ -43,14 +49,13 @@ public:
 int main(int argc, char **argv){
 
     ros::init(argc, argv, "webcam_pub");
-    ros::Rate r(30);
     WebcamPub my_pub(0);
+    ros::Rate r(10);
 
     while( ros::ok() ){
         my_pub.pub_msg();
         r.sleep();
     }
-
 
     return 0;
 }

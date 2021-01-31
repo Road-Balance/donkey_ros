@@ -4,6 +4,7 @@
 #include <opencv2/core.hpp>
 #include <opencv2/videoio.hpp>
 #include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
 #include <iostream>
 #include <cstdlib>
 #include <stdio.h>
@@ -42,12 +43,15 @@ public:
 
     bool get_frame(cv::Mat &src){
         // wait for a new frame from camera and store it into 'frame'
-        m_cap.read(src);
+        m_cap >> src;
+
         // check if we succeeded
         if (src.empty()) {
             std::cerr << "ERROR! blank frame grabbed\n";
             return false;
         }
+        cv::resize(src, src, cv::Size(640, 360), 0, 0, cv::INTER_CUBIC);
+        
         return true;
     }
 };

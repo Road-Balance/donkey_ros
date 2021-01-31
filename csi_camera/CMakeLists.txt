@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(csi_camera)
 
-set(OpenCV_INCLUDE_DIRS "/usr/include/opencv2;/usr/include")
+set(OpenCV_INCLUDE_DIRS "/usr/include/opencv4;/usr/include")
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -9,7 +9,6 @@ set(OpenCV_INCLUDE_DIRS "/usr/include/opencv2;/usr/include")
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package( OpenCV REQUIRED )
 
 find_package(catkin REQUIRED COMPONENTS
   cv_bridge
@@ -22,6 +21,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 
 ## System dependencies are found with CMake's conventions
+find_package( OpenCV REQUIRED )
 # find_package(Boost REQUIRED COMPONENTS system)
 
 
@@ -111,10 +111,10 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES csi_camera
-#  CATKIN_DEPENDS cv_bridge image_transport rospy sensor_msgs std_msgs
-#  DEPENDS system_lib
+  INCLUDE_DIRS include
+  LIBRARIES csi_camera
+  CATKIN_DEPENDS cv_bridge image_transport rospy roscpp sensor_msgs std_msgs
+  # DEPENDS system_lib
 )
 
 ###########
@@ -124,11 +124,8 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
-)
-
-include_directories( 
   ${OpenCV_INCLUDE_DIRS} 
 )
 
@@ -147,7 +144,8 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(webcam_pub_node src/webcam_pub.cpp)
-add_executable(class_test src/class_test.cpp)
+add_executable(cpp_webcam_pub src/webcam_pub.cpp)
+add_executable(raw_webcam src/raw_webcam.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -158,14 +156,18 @@ add_executable(class_test src/class_test.cpp)
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(webcam_pub_node ${webcam_pub_node_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-add_dependencies(class_test ${class_test_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(cpp_webcam_pub ${cpp_webcam_pub_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(raw_webcam ${raw_webcam_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(webcam_pub_node
 #   ${catkin_LIBRARIES}
 # )
-target_link_libraries(class_test
+target_link_libraries(cpp_webcam_pub
   ${catkin_LIBRARIES}
+  ${OpenCV_LIBS}
+)
+target_link_libraries(raw_webcam
   ${OpenCV_LIBS}
 )
 
