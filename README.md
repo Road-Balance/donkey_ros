@@ -3,8 +3,8 @@
 ## Donkey car with ROS!!
 
 <p align="center">
-    <img src="./Images/blob_tracking.gif" width="500" style="padding-right: 50px">
-    <img src="./Images/joy_control.gif" width="500" style="padding-left: 50px">
+    <img src="./Images/blob_tracking.gif" width="400" />
+    <img src="./Images/joy_control.gif" width="400" />
 </p>
 
 
@@ -14,7 +14,7 @@ There's Notion Lecture Notes and Youtube video's about this project.
 But, It's written in Korean. Anyway, Here's the link
 
 * [Notion Lecture Notes](https://www.notion.so/ROS-for-G-Camp-410d95df137d403ca176cfec4822351a)
-* Youtube Lecture Video - Coming Soon!!
+* Youtube Lecture Video - **Coming Soon!!**
 
 ## Tested System information
 
@@ -50,7 +50,7 @@ $ sudo apt-get install ros-melodic-image-view
 
 2. OpenCV4 installation
 
-- Can be found in JetsonHacks repo
+- Can be found in [JetsonHacks repo](https://github.com/JetsonHacksNano/buildOpenCV)
 
 3. Clone this Repo
 
@@ -66,6 +66,8 @@ $ source devel/setup.bash
 ## Usage
 
 1. csi_camera package
+
+Packages for Image Streaming
 
 > Check Camera Connection First!!!
 
@@ -89,15 +91,108 @@ $ rosrun image_view image_view image:=/csi_image
 
 ### CSI Camera Publish
 
+```bash
+$ roscore
+
+$ rosrun csi_camera csi_pub.py
+$ rosrun image_view image_view image:=/csi_image
+```
+
 2. donkey_control package
 
+Packages for controlling `RC Car` with `PCA9685` PWM driver.
+You need to install `Adafruit_PCA9685` python package first 
 
-3. donkey_cv package
+There's two modes for controlling RC Car
+
+* JoyStick Control
+* Blob Control
+
+```bash
+$ roscore
+
+$ rosrun donkey_control joy_control.py
+$ rosrun donkey_control blob_chase.py
+```
+
+3. donkey_joy package
+
+There's two modes for using joystick
+
+* Button mode
+* Axes mode
+
+```bash
+$ roslaunch donkey_joy joy_teleop_axes.launch
+$ roslaunch donkey_joy joy_teleop_btns.launch
+```
+
+4. donkey_cv package
+
+Packages for OpenCV applications
+
+* Find Blob with Certain color
+* Publish Image location as a `geometry_msgs/Point`
+
+```bash
+$ roscore
+
+$ rosrun donkey_cv find_ball.py
+```
+
+## Application
+
+### **1. joy_control**
+
+Control RC Car with logitech F710 game controller
+
+<p align="center">
+    <img src="./Images/joy_control.gif" width="500" />
+</p>
+
+```bash
+$ roscore
+
+# Jetson
+$ rosrun donkey_control joy_control.py
+
+# Laptop or ROS Slave PC
+$ roslaunch donkey_joy joy_teleop_axes.launch
+# or
+$ roslaunch donkey_joy joy_teleop_btns.launch
+
+```
+
+### **2. blob_tracking**
+
+Find the green box of the Jetson Nano on the screen and change the direction of the wheel accordingly.
 
 
-4. donkey_joy package
+<p align="center">
+    <img src="./Images/blob_tracking.gif" width="500" />
+</p>
 
-### TODO - Readme on progress
+
+```bash
+$ roscore
+
+$ rosrun csi_camera csi_pub.py
+$ rosrun donkey_cv find_ball.py 
+$ rosrun donkey_control chase_the_ball.py 
+$ rosrun donkey_control blob_chase.py 
+```
+
+Debugging with `image_view`
+
+```bash
+rosrun image_view image_view image:=/webcam_image
+rosrun image_view image_view image:=/blob/image_mask
+rosrun image_view image_view image:=/blob/image_blob
+```
+
+---
+
+Nothing
 
 ```
 gst-launch-1.0 nvarguscamerasrc sensor_id=0 ! \
