@@ -11,14 +11,19 @@ class WebcamPub {
 private:
     VideoHandler *m_vh;
     ros::NodeHandle m_nh;
-    ros::Publisher m_pub;
-    
+    // ros::Publisher m_image_pub;
+    image_transport::Publisher m_image_pub;
+
     bool m_viz;
+
     cv::Mat m_image;
     sensor_msgs::ImagePtr m_msg;
 public:
     WebcamPub(const int& device_ID_in = 0, const bool& viz_in = 0 ): m_viz(viz_in){
-        m_pub = m_nh.advertise<sensor_msgs::Image>("webcam_image", 1);
+
+        image_transport::ImageTransport it(m_nh);
+        m_image_pub = it.advertise("image_raw", 1);
+
         m_vh = new VideoHandler(device_ID_in);
     }
 
@@ -42,7 +47,7 @@ public:
     void pub_msg(){
         get_img();
         m_msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", m_image).toImageMsg();
-        m_pub.publish(m_msg);
+        m_image_pub.publish(m_msg);
     }
 };
 
